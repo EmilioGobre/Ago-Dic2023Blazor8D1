@@ -41,10 +41,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options => options.AddDefaultPolicy(
     builder =>
     {
+<<<<<<< HEAD
       builder.WithOrigins("http://localhost:5289")
       .AllowAnyHeader()
       .AllowAnyMethod();
     }));
+=======
+    builder.WithOrigins("http://localhost:5289")
+    .AllowAnyHeader()
+    .AllowAnyMethod();
+}));
+>>>>>>> a82f73b6d14db796ce450468845f046791322781
 var connectionString = builder.Configuration.GetConnectionString("DildoStoreContext");
 builder.Services.AddSqlServer<DildoStoreContext>(connectionString);
 var app = builder.Build();
@@ -57,6 +64,7 @@ dildoGroup.MapGet("/", async (DildoStoreContext context) =>
 await context.Dildos.AsNoTracking().ToListAsync());
 
 // GET/Dildo/{id}
+<<<<<<< HEAD
 dildoGroup.MapGet("/{id}", async (int id, DildoStoreContext context) =>
 {
   Dildo? dildo = await context.Dildos.FindAsync(id);
@@ -65,11 +73,22 @@ dildoGroup.MapGet("/{id}", async (int id, DildoStoreContext context) =>
     return Results.NotFound();
   }
   return Results.Ok(dildo);
+=======
+dildoGroup.MapGet("/{id}", async (int id, DildoStoreContext context) => 
+{
+    Dildo? dildo = await context.Dildos.FindAsync(id);
+    if(dildo is null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(dildo);
+>>>>>>> a82f73b6d14db796ce450468845f046791322781
 });
 
 // POST/dildos
 dildoGroup.MapPost("/", async (Dildo dildo, DildoStoreContext context) =>
 {
+<<<<<<< HEAD
   context.Dildos.Add(dildo);
   await context.SaveChangesAsync();
   return Results.CreatedAtRoute("GetDildo", new { id = dildo.Id }, dildo);
@@ -96,10 +115,35 @@ dildoGroup.MapPut("/{id}", async (int id, Dildo updatedDildo, DildoStoreContext 
   existingDildo.Stock = updatedDildo.Stock;
   await context.SaveChangesAsync();
   return Results.NoContent();
+=======
+    // TODO: Where the F this id comes?
+    context.Dildos.Add(dildo);
+    await context.SaveChangesAsync();
+    return Results.CreatedAtRoute("GetDildo", 
+    new {id = dildo.Id}, dildo);
+}).WithName("GetDildo");
+
+// PUT/dildos/{id}
+dildoGroup.MapPut("/{id}",async (int id, Dildo updatedDildo, DildoStoreContext context) =>
+{
+    var rowsAffected = await context.Dildos.Where(
+        dildo => dildo.Id == id)
+        .ExecuteUpdateAsync(updates =>
+        updates.SetProperty(dildo => dildo.Name, updatedDildo.Name)
+               .SetProperty(dildo => dildo.Price, updatedDildo.Price)
+               .SetProperty(dildo => dildo.Size, updatedDildo.Size)
+               .SetProperty(dildo => dildo.ExpireDate, updatedDildo.ExpireDate)
+               .SetProperty(dildo => dildo.Material, updatedDildo.Material)
+               .SetProperty(dildo => dildo.Color, updatedDildo.Color)
+               .SetProperty(dildo => dildo.Stock, updatedDildo.Stock));
+    
+    return rowsAffected == 0 ? Results.NotFound() : Results.NoContent();
+>>>>>>> a82f73b6d14db796ce450468845f046791322781
 });
 
 dildoGroup.MapDelete("/{id}", async (int id, DildoStoreContext context) =>
 {
+<<<<<<< HEAD
   Dildo? deletedDildo = await context.Dildos.FindAsync(id);
   if (deletedDildo is null)
   {
@@ -128,6 +172,12 @@ dildoGroup.MapGet("/name/{name}", async (string name, DildoStoreContext context)
     return Results.NotFound();
   }
   return Results.Ok(dildosByName);
+=======
+    var rowsAffected = await context.Dildos.Where(
+        dildo => dildo.Id == id)
+        .ExecuteDeleteAsync();
+    return rowsAffected == 0 ? Results.NotFound() : Results.NoContent();
+>>>>>>> a82f73b6d14db796ce450468845f046791322781
 });
 #endregion
 
