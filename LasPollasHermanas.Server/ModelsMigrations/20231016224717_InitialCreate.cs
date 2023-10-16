@@ -29,6 +29,23 @@ namespace LasPollasHermanas.Server.ModelsMigrations
                 {
                     table.PrimaryKey("PK_Dildos", x => x.Id);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Sername = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Puesto = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                });
         }
 
         /// <inheritdoc />
@@ -36,6 +53,9 @@ namespace LasPollasHermanas.Server.ModelsMigrations
         {
             migrationBuilder.DropTable(
                 name: "Dildos");
+
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }
