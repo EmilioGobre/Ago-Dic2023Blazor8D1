@@ -1,0 +1,89 @@
+@page "/dildo/name"
+@using Models
+@using Data
+@inject NavigationManager NavigationManager
+@inject DildoClient client
+
+<PageTitle>Search Dildo</PageTitle>
+<h1>Dildo Search</h1>
+
+<div class="d-flex justify-content-start">
+  <div class="w-50 mb-8">
+    <input type="text" @oninput="UpdateSearch" class="form-control" placeholder="Search" />
+  </div>
+</div>
+
+@if (dildos is null)
+{
+  <p><em>Escribe algo para empezar a buscar</em></p>
+}
+else
+{
+  <table class="table table-striped table-bordered table-hover">
+    <thead class="table-dark">
+      <th>Id</th>
+      <th>Name</th>
+      <th>Price</th>
+      <th>Size</th>
+      <th>Expire Date</th>
+      <th>Material</th>
+      <th>Color</th>
+      <th>Stock</th>
+    </thead>
+    <tbody>
+      @foreach (var dildo in dildos)
+      {
+        <tr>
+          <td>@dildo.Id</td>
+          <td>@dildo.Name</td>
+          <td>@dildo.Price</td>
+          <td>@dildo.Size</td>
+          <td>@dildo.ExpireDate.ToString("MM/dd/yyyy")</td>
+          <td>@dildo.Material</td>
+          <td>@dildo.Color</td>
+          <td>@dildo.Stock</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+
+@code {
+  private Dildo[]? dildos;
+
+  [Parameter]
+  public string Name { get; set; } = "";
+
+  private async Task UpdateSearch(ChangeEventArgs e)
+  {
+    Name = e.Value.ToString();
+    await PerformSearch();
+  }
+
+  private async Task PerformSearch()
+  {
+    if (!string.IsNullOrWhiteSpace(Name))
+    {
+      string[] searchTerms = Name.ToLower().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+      dildos = (await client.GetDildosByName(Name))
+      .Where(d =>
+      searchTerms.Any(term =>
+      d.Id.ToString().ToLower().Contains(term) ||
+      d.Name.ToLower().Contains(term) ||
+      d.Material.ToLower().Contains(term) ||
+      d.Color.ToLower().Contains(term) ||
+      d.Size.ToString().Contains(term) ||
+      d.Price.ToString().ToLower().Contains(term) ||
+      d.Stock.ToString().ToLower().Contains(term) ||
+      d.ExpireDate.ToString("MM/dd/yyyy").Contains(term)
+      )
+      )
+      .ToArray();
+    }
+    else
+    {
+      dildos = await client.GetDildosByName("");
+    }
+  }
+}
