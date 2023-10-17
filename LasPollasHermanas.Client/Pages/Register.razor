@@ -1,0 +1,85 @@
+@page "/Registro"
+@using Models;
+@using Data;
+@inject NavigationManager NavigationManager
+@inject UserClient client
+
+<h1>Las Pollas Hermanas Registro</h1>
+
+@if (!string.IsNullOrEmpty(mensaje))
+{
+  <div class="alert alert-warning">
+    @mensaje
+  </div>
+}
+
+<div style="text-align: center;">
+  <EditForm Model="user" OnValidSubmit="RegistrarUsuario">
+    <div class="form-group" style="max-width: 200px; margin: 0 auto;">
+      <p>Nombre</p>
+      <InputText @bind-Value="user.Name" class="form-control" style="width: 100%" />
+      <ValidationMessage For="@(() => user.Name)" />
+
+      <p>Apellidos</p>
+      <InputText @bind-Value="user.Sername" class="form-control" style="width: 100%" />
+      <ValidationMessage For="@(() => user.Sername)" />
+
+      <p>Correo</p>
+      <InputText @bind-Value="user.Email" class="form-control" style="width: 100%" />
+      <ValidationMessage For="@(() => user.Email)" />
+
+      <p>Contraseña</p>
+      <InputText @bind-Value="user.Password" class="form-control" style="width: 100%" />
+      <ValidationMessage For="@(() => user.Password)" />
+
+      <p>Puesto</p>
+      <InputNumber @bind-Value="user.Puesto" class="form-control" style="width: 100%" />
+      <ValidationMessage For="@(() => user.Puesto)" />
+
+      <p>Fecha de Nacimiento</p>
+      <InputDate @bind-Value="user.fechaNacimiento" class="form-control" style="width: 100%" />
+      <ValidationMessage For="@(() => user.fechaNacimiento)" />
+
+      <br>
+      <button type="submit" class="btn btn-info" style="color: white;">
+        Registrarme
+      </button>
+      <a href="/">Ya estoy registrado</a>
+    </div>
+  </EditForm>
+</div>
+
+@code {
+  private Users user = new Users();
+  private string mensaje;
+
+  private async Task RegistrarUsuario()
+  {
+    if (string.IsNullOrEmpty(user.Name) || string.IsNullOrEmpty(user.Sername) ||
+    string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
+    {
+      mensaje = "Por favor, complete todos los campos obligatorios.";
+    }
+    else
+    {
+      var existingUser = await client.GetUserEmail(user.Email);
+      if (existingUser != null)
+      {
+        mensaje = "El correo ya está registrado. Por favor, utilice otro correo.";
+      }
+      else
+      {
+        try
+        {
+          await client.AddUserAsync(user);
+          mensaje = "¡Registro exitoso!";
+          NavigationManager.NavigateTo($"/");
+        }
+        catch (Exception ex)
+        {
+          mensaje = "Error en el registro. Inténtalo de nuevo.";
+        }
+      }
+    }
+  }
+}

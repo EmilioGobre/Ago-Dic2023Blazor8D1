@@ -54,7 +54,17 @@ namespace LasPollasHermanas.Server.ModelsMigrations
                     b.Property<int>("Stock")
                         .HasColumnType("int");
 
+                    b.Property<int?>("UsersId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsersId1")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UsersId");
+
+                    b.HasIndex("UsersId1");
 
                     b.ToTable("Dildos");
                 });
@@ -69,8 +79,7 @@ namespace LasPollasHermanas.Server.ModelsMigrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -79,20 +88,39 @@ namespace LasPollasHermanas.Server.ModelsMigrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Puesto")
                         .HasColumnType("int");
 
                     b.Property<string>("Sername")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("fechaNacimiento")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("LasPollasHermanas.Server.Models.Dildo", b =>
+                {
+                    b.HasOne("LasPollasHermanas.Server.Models.Users", null)
+                        .WithMany("dildosActuales")
+                        .HasForeignKey("UsersId");
+
+                    b.HasOne("LasPollasHermanas.Server.Models.Users", null)
+                        .WithMany("historial")
+                        .HasForeignKey("UsersId1");
+                });
+
+            modelBuilder.Entity("LasPollasHermanas.Server.Models.Users", b =>
+                {
+                    b.Navigation("dildosActuales");
+
+                    b.Navigation("historial");
                 });
 #pragma warning restore 612, 618
         }

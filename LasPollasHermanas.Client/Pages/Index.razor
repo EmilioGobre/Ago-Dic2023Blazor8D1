@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/dildos/{puesto:int}/{id:int}"
 @using Models;
 @using Data;
 @inject NavigationManager NavigationManager
@@ -32,33 +32,44 @@ else
     </thead>
     <tbody>
         @foreach (var dildo in dildos)
+{
+    <tr>
+        <td>@dildo.Id</td>
+        <td>@dildo.Name</td>
+        <td>@dildo.Price</td>
+        <td>@dildo.Size</td>
+        <td>@dildo.ExpireDate.ToString("MM/dd/yyyy")</td>
+        <td>@dildo.Material</td>
+        <td>@dildo.Color</td>
+        <td>@dildo.Stock</td>
+        <td>
+            @if (puesto == 1)
             {
-                <tr>
-                    <td>@dildo.Id</td>
-                    <td>@dildo.Name</td>
-                    <td>@dildo.Price</td>
-                    <td>@dildo.Size</td>
-                    <td>@dildo.ExpireDate.ToString("MM/dd/yyyy")</td>
-                    <td>@dildo.Material</td>
-                    <td>@dildo.Color</td>
-                    <td>@dildo.Stock</td>
-                    <td>
-                        <button class="btn btn-primary" @onclick="(() =>EditDildo(dildo.Id))">
-                            <i class="oi oi-pencil"></i>
-                        </button>
-                    </td>
-                    <td>
-                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal"
-                        @onclick="(() => currentDildo = dildo)"> <i class="oi oi-x"></i></button>
-                    </td>
-                </tr>
+                <button class="btn btn-primary" @onclick="(() => EditDildo(dildo.Id))">
+                    <i class="oi oi-pencil"></i>
+                </button>
+                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                    @onclick="(() => currentDildo = dildo)">
+                    <i class="oi oi-x"></i>
+                </button>
             }
+            else if (puesto == 2)
+            {
+                <button class="btn btn-success" @onclick="(() => BuyDildo(dildo.Id))">
+                    Buy
+                </button>
+            }
+        </td>
+    </tr>
+}
         </tbody>
     </table>
 }
 
 @code
 {
+    [Parameter]
+    public int puesto { get; set; }
     private Dildo[]? dildos;
     private Dildo? currentDildo;
     protected override async Task OnInitializedAsync()
@@ -74,6 +85,10 @@ else
     private void EditDildo(int id)
     {
         NavigationManager.NavigateTo($"/dildo/{id}");
+    }
+    private void BuyDildo(int id)
+    {
+      // Cuando se compra un dildo, se resta uno al stock
     }
 
     private async Task OnDeleteModalCloseAsync(bool accepted)

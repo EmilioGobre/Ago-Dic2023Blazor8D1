@@ -1,0 +1,40 @@
+@page "/"
+@using Models;
+@using Data;
+@inject NavigationManager NavigationManager
+@inject UserClient client
+
+<h1>Las Pollas Hermanas Login</h1>
+
+<div style="text-align: center;">
+  <div class="form-group" style="max-width: 200px; margin: 0 auto;">
+    <p>Ingresa tu Correo</p>
+    <InputText @bind-Value="correo" class="form-control" style="width: 100%" />
+
+    <p>Ingresa tu Contraseña</p>
+    <InputText @bind-Value="contrasena" class="form-control" style="width: 100%" type="password" />
+
+    <br>
+    <button class="btn btn-info" style="color: white;" @onclick="Ingresar">Ingresar</button>
+    <br>
+    <a href="/Registro">No estoy registrado</a>
+  </div>
+</div>
+
+@code {
+  private string correo;
+  private string contrasena;
+
+  private async Task Ingresar()
+  {
+    var user = await client.GetUserEmail(correo);
+    if (user != null && user.Password == contrasena)
+    {
+      NavigationManager.NavigateTo($"/dildos{user.Puesto}/{user.Id}");
+    }
+    else
+    {
+      Console.WriteLine("Credenciales incorrectas.");
+    }
+  }
+}

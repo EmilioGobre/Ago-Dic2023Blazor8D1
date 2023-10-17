@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LasPollasHermanas.Server.Models
+namespace LasPollasHermanas.Client.Models
 {
   public class Users
   {
@@ -25,7 +25,7 @@ namespace LasPollasHermanas.Server.Models
     [Range(1, 100)]
     public int Puesto { get; set; }
     public DateTime fechaNacimiento { get; set; }
-    public List<Dildo> dildosActuales { get; set; }
-    public List<Dildo> historial { get; set; }
+    public List<Dildo>? dildosActuales { get; set; }
+    public List<Dildo>? historial { get; set; }
   }
 }
