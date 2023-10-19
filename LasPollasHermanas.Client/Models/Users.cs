@@ -13,13 +13,13 @@ namespace LasPollasHermanas.Client.Models
     [StringLength(50)]
     public string? Name { get; set; }
     [Required]
-    [Range(1, 100)]
+    [StringLength(50)]
     public string? Sername { get; set; }
     [Required]
-    [Range(1, 100)]
+    [StringLength(50)]
     public string? Email { get; set; }
     [Required]
-    [Range(1, 100)]
+    [StringLength(50)]
     public string? Password { get; set; }
     [Required]
     [Range(1, 100)]

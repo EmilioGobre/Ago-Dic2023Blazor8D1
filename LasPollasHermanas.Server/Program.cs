@@ -43,7 +43,7 @@ userGroup.MapGet("/byEmail/{email}", async (string email, DildoStoreContext cont
 
 
 
-// POST/dildos
+// POST/Users
 userGroup.MapPost("/", async (Users user, DildoStoreContext context) =>
 {
   // TODO: Where the F this id comes?
@@ -53,7 +53,7 @@ userGroup.MapPost("/", async (Users user, DildoStoreContext context) =>
   new { id = user.Id }, user);
 }).WithName("GetUsers");
 
-// PUT/dildos/{id}
+// PUT/Users/{id}
 userGroup.MapPut("/{id}", async (int id, Users updatedUser, DildoStoreContext context) =>
 {
   var rowsAffected = await context.Users.Where(
