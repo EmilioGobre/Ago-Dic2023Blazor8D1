@@ -17,6 +17,7 @@ dotnet ef database update --connection "Server=localhost; DataBase=DildoStore; U
 
 "DildoStoreContext" : "Server=localhost; Database=DildoStore; User Id=sa; Password=PASSWORD_GOES_HERE; TrustServerCertificate=True"
 
+dotnet ef migrations add InitialCreate --output-dir Models\Migrations
 ```
 
 ### usuarios
