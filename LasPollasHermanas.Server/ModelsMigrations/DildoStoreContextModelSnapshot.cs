@@ -24,19 +24,21 @@ namespace LasPollasHermanas.Server.ModelsMigrations
 
             modelBuilder.Entity("LasPollasHermanas.Server.Models.Dildo", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("IdDildo")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdDildo"));
 
                     b.Property<string>("Color")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ExpireDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Material")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -54,28 +56,18 @@ namespace LasPollasHermanas.Server.ModelsMigrations
                     b.Property<int>("Stock")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UsersId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("UsersId1")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UsersId");
-
-                    b.HasIndex("UsersId1");
+                    b.HasKey("IdDildo");
 
                     b.ToTable("Dildos");
                 });
 
             modelBuilder.Entity("LasPollasHermanas.Server.Models.Users", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("IdUser")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUser"));
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -100,27 +92,54 @@ namespace LasPollasHermanas.Server.ModelsMigrations
                     b.Property<DateTime>("fechaNacimiento")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                    b.HasKey("IdUser");
 
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("LasPollasHermanas.Server.Models.Dildo", b =>
+            modelBuilder.Entity("LasPollasHermanas.Server.Models.dildosComprados", b =>
                 {
-                    b.HasOne("LasPollasHermanas.Server.Models.Users", null)
-                        .WithMany("dildosActuales")
-                        .HasForeignKey("UsersId");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.HasOne("LasPollasHermanas.Server.Models.Users", null)
-                        .WithMany("historial")
-                        .HasForeignKey("UsersId1");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DildoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("comprado")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DildoId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("dildosComprados");
                 });
 
-            modelBuilder.Entity("LasPollasHermanas.Server.Models.Users", b =>
+            modelBuilder.Entity("LasPollasHermanas.Server.Models.dildosComprados", b =>
                 {
-                    b.Navigation("dildosActuales");
+                    b.HasOne("LasPollasHermanas.Server.Models.Dildo", "Dildo")
+                        .WithMany()
+                        .HasForeignKey("DildoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("historial");
+                    b.HasOne("LasPollasHermanas.Server.Models.Users", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Dildo");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

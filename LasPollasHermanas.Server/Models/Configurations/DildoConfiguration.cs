@@ -9,7 +9,7 @@ namespace LasPollasHermanas.Server.Models
         {
             // Fluent API
             builder.Property(dildo => dildo.Price)
-            .HasPrecision(18,2);
+            .HasPrecision(18, 2);
         }
     }
 }

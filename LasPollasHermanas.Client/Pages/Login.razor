@@ -4,38 +4,45 @@
 @inject NavigationManager NavigationManager
 @inject UserClient client
 
-<h1>Las Pollas Hermanas Login</h1>
+<h1 class="text-center">Bienvenido a Las Pollas Hermanas</h1>
 
-<div style="text-align: center;">
+<div class="d-flex justify-content-center">
   <EditForm Model="@user" OnValidSubmit="Ingresar">
-    <div class="form-group" style="max-width: 200px; margin: 0 auto;">
-      <p>Correo</p>
-      <InputText @bind-Value="correo" class="form-control" style="width: 100%" />
+    <div class="form-group" style="max-width: 300px;">
+      <InputText @bind-Value="correo" placeholder="Correo" class="form-control mb-3" style="width: 100%" />
       <ValidationMessage For="@(() => user.Email)" />
-      <br>
-      <p>Contraseña</p>
-      <InputText @bind-Value="contrasena" class="form-control" style="width: 100%" />
+
+      <InputText type="password" placeholder="Contraseña" @bind-Value="contrasena" class="form-control mb-3"
+        style="width: 100%" />
       <ValidationMessage For="@(() => user.Password)" />
-      <br>
-      <button type="submit" class="btn btn-info" style="color: white;">
-        Entrar
-      </button>
-      <a href="/Registro">No estoy registrado</a>
+
+      <div class="row justify-content-center">
+        <button type="submit" class="btn btn-info" style="color: white;">
+          Ingresar
+        </button>
+      </div>
+
+      <div class="row justify-content-center">
+        <a href="/Registro" style="display: block; text-align: center;">Registrarme</a>
+      </div>
     </div>
   </EditForm>
 </div>
 
 @code {
   private Users user = new Users();
-  private string correo;
-  private string contrasena;
+  private string? correo;
+  private string? contrasena;
 
   private async Task Ingresar()
   {
-    var user = await client.GetUserEmail(correo);
+    var users = await client.GetUsersAsync();
+    var user = users.FirstOrDefault(u => u.Email == correo);
+
     if (user != null && user.Password == contrasena)
+
     {
-      NavigationManager.NavigateTo($"/dildos/{user.Puesto}/{user.Id}");
+      NavigationManager.NavigateTo($"/dildos/{user.Puesto}/{user.idUser}");
     }
     else
     {

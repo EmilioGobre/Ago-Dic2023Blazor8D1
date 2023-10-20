@@ -1,0 +1,97 @@
+@page "/search/{puesto:int}/{id:int}"
+@page "/search"
+@using LasPollasHermanas.Client.Models;
+@using LasPollasHermanas.Client.Data;
+@inject NavigationManager NavigationManager
+@inject DildoClient client
+
+<h1 class="text-center">Search</h1>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <form class="mb-3">
+        <div class="form-group">
+          <label for="searchInput" class="form-label">Buscar:</label>
+          <input type="text" id="searchInput" class="form-control" @bind="searchString" @oninput="SearchAsync">
+        </div>
+      </form>
+
+      @if (dildos is null || string.IsNullOrWhiteSpace(searchString))
+      {
+        <p>Loading ...</p>
+      }
+      else if (dildos.Any())
+      {
+        <table class="table table-striped table-bordered table-hover">
+          <thead class="table-dark">
+            <tr>
+              <th>Id</th>
+              <th>Name</th>
+              <th>Price</th>
+              <th>Size</th>
+              <th>Expire Date</th>
+              <th>Material</th>
+              <th>Color</th>
+              <th>Stock</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach (var dildo in dildos)
+
+            {
+              <tr>
+                <td>@dildo.idDildo</td>
+                <td>@dildo.Name</td>
+                <td>@dildo.Price</td>
+                <td>@dildo.Size</td>
+                <td>@dildo.ExpireDate.ToString("MM/dd/yyyy")</td>
+                <td>@dildo.Material</td>
+                <td>@dildo.Color</td>
+                <td>@dildo.Stock</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+      else
+      {
+        <p>No results found.</p>
+      }
+      <div class="text-center">
+        <button class="btn btn-primary"
+          @onclick="@(e => NavigationManager.NavigateTo($"/dildos/{puesto}/{id}"))">Back</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@code {
+  private IEnumerable<Dildo>? dildos;
+
+  private string searchString = "";
+
+
+
+  [Parameter]
+
+  public int puesto { get; set; }
+
+
+
+  [Parameter]
+
+  public int id { get; set; }
+
+
+
+  private async Task SearchAsync(ChangeEventArgs e)
+
+  {
+
+    searchString = e.Value.ToString();
+
+    dildos = await client.SearchDildosAsync(searchString);
+
+  }
+}

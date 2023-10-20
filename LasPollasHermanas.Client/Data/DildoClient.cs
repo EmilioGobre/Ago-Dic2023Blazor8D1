@@ -3,50 +3,40 @@ using LasPollasHermanas.Client.Models;
 using System.Net.Http.Json;
 public class DildoClient
 {
-  private readonly HttpClient httpClient;
+    private readonly HttpClient httpClient;
 
-  public DildoClient(HttpClient httpClient)
-  {
-    this.httpClient = httpClient;
-  }
-
-  public async Task<Dildo[]?> GetDildosAsync()
-  {
-    return await httpClient.GetFromJsonAsync<Dildo[]>("dildos");
-  }
-
-  public async Task AddDildoAsync(Dildo dildo)
-  {
-    await httpClient.PostAsJsonAsync("dildos", dildo);
-  }
-
-  public async Task<Dildo> GetDildoAsync(int id)
-  {
-    return await httpClient.GetFromJsonAsync<Dildo>($"dildos/{id}") ??
-    throw new Exception("Could not find dildo");
-  }
-
-  public async Task UpdateDildoAsync(Dildo updatedDildo)
-  {
-    await httpClient.PutAsJsonAsync($"dildos/{updatedDildo.Id}", updatedDildo);
-  }
-
-  public async Task DeleteDildoAsync(int id)
-  {
-    await httpClient.DeleteAsync($"dildos/{id}");
-  }
-
-  public async Task<Dildo[]?> GetDildosByName(string name)
-  {
-    try
+    public DildoClient(HttpClient httpClient)
     {
-      return await httpClient.GetFromJsonAsync<Dildo[]>($"dildos?name={name}");
+        this.httpClient = httpClient;
     }
-    catch (Exception ex)
+
+    public async Task<Dildo[]?> GetDildosAsync()
     {
-      // Handle the error, for example, log or show an error message to the user.
-      Console.WriteLine($"Error al obtener dildos por nombre: {ex.Message}");
-      return null;
+        return await httpClient.GetFromJsonAsync<Dildo[]>("dildos");
     }
-  }
+
+    public async Task AddDildoAsync(Dildo dildo)
+    {
+        await httpClient.PostAsJsonAsync("dildos", dildo);
+    }
+
+    public async Task<Dildo> GetDildoAsync(int id)
+    {
+        return await httpClient.GetFromJsonAsync<Dildo>($"dildos/{id}") ??
+        throw new Exception("Could not find dildo");
+    }
+
+    public async Task UpdateDildoAsync(Dildo updatedDildo)
+    {
+        await httpClient.PutAsJsonAsync($"dildos/{updatedDildo.idDildo}", updatedDildo);
+    }
+
+    public async Task DeleteDildoAsync(int id)
+    {
+        await httpClient.DeleteAsync($"dildos/{id}");
+    }
+    public async Task<Dildo[]> SearchDildosAsync(string query)
+    {
+        return await httpClient.GetFromJsonAsync<Dildo[]>($"dildos/search?query={query}");
+    }
 }

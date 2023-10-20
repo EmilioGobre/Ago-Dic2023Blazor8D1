@@ -4,74 +4,100 @@
 @inject NavigationManager NavigationManager
 @inject UserClient client
 
-<h1>Las Pollas Hermanas Registro</h1>
+<h1 class="text-center">Registro en Las Pollas Hermanas</h1>
 
 @if (!string.IsNullOrEmpty(mensaje))
+
 {
   <div class="alert alert-warning">
     @mensaje
   </div>
 }
 
-<div style="text-align: center;">
-  <EditForm Model="@user" OnValidSubmit="RegistrarUsuario">
-    <div class="form-group" style="max-width: 200px; margin: 0 auto;">
-      <p>Nombre</p>
-      <InputText @bind-Value="user.Name" class="form-control" style="width: 100%" />
-      <ValidationMessage For="@(() => user.Name)" />
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-sm-3">
+      <EditForm Model="@user" OnValidSubmit="RegistrarUsuario">
+        <div class="mb-3">
+          <InputText @bind-Value="user.Name" id="name" class="form-control" placeholder="Nombre" />
+          <ValidationMessage For="@(() => user.Name)" />
+        </div>
 
-      <p>Apellidos</p>
-      <InputText @bind-Value="user.Sername" class="form-control" style="width: 100%" />
-      <ValidationMessage For="@(() => user.Sername)" />
+        <div class="mb-3">
+          <InputText @bind-Value="user.Sername" id="surname" class="form-control" placeholder="Apellido" />
+          <ValidationMessage For="@(() => user.Sername)" TValue="string" />
+        </div>
 
-      <p>Correo</p>
-      <InputText @bind-Value="user.Email" class="form-control" style="width: 100%" />
-      <ValidationMessage For="@(() => user.Email)" />
+        <div class="mb-3">
+          <InputText @bind-Value="user.Email" id="email" class="form-control" placeholder="Correo" />
+          <ValidationMessage For="@(() => user.Email)" />
+        </div>
 
-      <p>Contraseña</p>
-      <InputText @bind-Value="user.Password" class="form-control" style="width: 100%" />
-      <ValidationMessage For="@(() => user.Password)" />
+        <div class="mb-3">
+          <InputText @bind-Value="user.Password" id="password" class="form-control" placeholder="Contraseña" />
+          <ValidationMessage For="@(() => user.Password)" />
+        </div>
 
-      <p>Puesto</p>
-      <InputNumber @bind-Value="user.Puesto" class="form-control" style="width: 100%" />
-      <ValidationMessage For="@(() => user.Puesto)" />
+        <div class="mb-3">
+          <label for="position" class="form-label">Puesto</label>
+          <InputNumber @bind-Value="user.Puesto" id="position" class="form-control" placeholder="Puesto" />
+          <ValidationMessage For="@(() => user.Puesto)" />
+        </div>
 
-      <p>Fecha de Nacimiento</p>
-      <InputDate @bind-Value="user.fechaNacimiento" class="form-control" style="width: 100%" />
-      <ValidationMessage For="@(() => user.fechaNacimiento)" />
+        <div class="mb-3">
+          <label for="birthdate" class="form-label">Fecha de Nacimiento</label>
+          <InputDate @bind-Value="user.fechaNacimiento" id="birthdate" class="form-control"
+            placeholder="Fecha de Nacimiento" />
+          <ValidationMessage For="@(() => user.fechaNacimiento)" />
+        </div>
 
-      <br>
-      <button type="submit" class="btn btn-info" style="color: white;">
-        Registrarme
-      </button>
-      <a href="/">Ya estoy registrado</a>
+        <div class="mb-3 text-center">
+          <button type="submit" class="btn btn-info">Registrarme</button>
+        </div>
+        <p class="text-center">¿Ya estás registrado? <a href="/">Iniciar sesión</a></p>
+      </EditForm>
     </div>
-  </EditForm>
+  </div>
 </div>
 
 @code {
   private Users user = new Users();
+
   private string mensaje;
 
+
+
   private async Task RegistrarUsuario()
+
   {
-    if (string.IsNullOrEmpty(user.Name) || string.IsNullOrEmpty(user.Sername) ||
-    string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
+
+    var users = await client.GetUsersAsync();
+
+    bool correoDuplicado = users.Any(u => u.Email == user.Email);
+
+
+
+    if (correoDuplicado)
+
     {
-      mensaje = "Por favor, complete todos los campos obligatorios.";
+
+      mensaje = "El correo ya está registrado. Por favor, utilice un correo diferente.";
+
     }
+
     else
+
     {
-        try
-        {
-          await client.AddUserAsync(user);
-          mensaje = "¡Registro exitoso!";
-          NavigationManager.NavigateTo($"/");
-        }
-        catch (Exception ex)
-        {
-          mensaje = "Error en el registro. Inténtalo de nuevo.";
-        }
+
+      // El correo no está duplicado, proceder con el registro.
+
+      await client.AddUserAsync(user);
+
+      mensaje = "¡Registro exitoso!";
+
+      NavigationManager.NavigateTo("/");
+
     }
+
   }
 }

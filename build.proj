@@ -3,4 +3,7 @@
     <!-- Build all csproj and vbproj -->
     <ProjectReference Include="**\*.*proj" />
 </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Blazored.Toast" Version="4.1.0" />
+  </ItemGroup>
 </Project>

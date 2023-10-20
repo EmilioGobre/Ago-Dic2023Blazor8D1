@@ -2,7 +2,7 @@
 GET {{baseUrl}}/dildos
 
 ###
-GET {{baseUrl}}/dildos/2
+GET {{baseUrl}}/dildos/2 
 
 
 ###
@@ -35,6 +35,3 @@ content-type: application/json
 
 ###
 DELETE {{baseUrl}}/dildos/2
-###
-
-GET {{baseUrl}}/dildos/name/Dildo

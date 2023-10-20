@@ -1,107 +1,173 @@
-﻿@page "/dildos/{puesto:int}/{id:int}"
+﻿@page "/dildos/{puesto:int}/{idU:int}"
 @using Models;
 @using Data;
 @inject NavigationManager NavigationManager
 @inject DildoClient client
+@inject UserClient userClient
+@inject CompradosClient compradosClient
 <h1>Las Pollas Hermanas Catalog</h1>
+@if (!string.IsNullOrEmpty(mensaje))
+{
+  <div class="alert alert-warning">
+    @mensaje
+  </div>
+}
 @if (dildos is null)
 {
-    <p>Loading ...</p>
+  <p>Loading ...</p>
 }
 else
 {
-    <DeleteDildo dildo="@currentDildo" OnClose="@OnDeleteModalCloseAsync">
-    </DeleteDildo>
+  <DeleteDildo dildo="@currentDildo" OnClose="@OnDeleteModalCloseAsync">
+  </DeleteDildo>
+  <div class="d-flex justify-content-center mb-4">
     @if (puesto == 1)
     {
-    <div class="row mb-4">
-        <div class="col-sm-6">
-            <button type="button" class="btn btn-primary" @onclick="CreateDildo">New Dildo</button>
-        </div>
+      <h2>Admin</h2>
     }
+    else if (puesto == 2)
+    {
+      <h2>Mortal User</h2>
+    }
+  </div>
+  <div class="d-flex justify-content-evenly mb-4">
+    <div>
+      <button class="btn btn-primary mx-3" @onclick="(() => perfil())">Perfil</button>
+      <button @onclick="NavigateToSearch" class="btn btn-info mx-3">Search</button>
+      @if (puesto == 1)
+      {
+        <button class="btn btn-warning mx-3" @onclick="(() => CreateDildo())">Create Dildo</button>
+      }
     </div>
-    <table class="table table-striped table-bordered table-hover">
+  </div>
+
+  <table class="table table-striped table-bordered table-hover">
     <thead class="table-dark">
-        <th>Id</th>
-        <th>Name</th>
-        <th>Price</th>
-        <th>Size</th>
-        <th>Expire Date</th>
-        <th>Material</th>
-        <th>Color</th>
-        <th>Stock</th>
-        <th></th>
-        <th></th>
+      <th>Id</th>
+      <th>Name</th>
+      <th>Price</th>
+      <th>Size</th>
+      <th>Expire Date</th>
+      <th>Material</th>
+      <th>Color</th>
+      <th>Stock</th>
+      <th></th>
     </thead>
     <tbody>
-        @foreach (var dildo in dildos)
-{
-    <tr>
-        <td>@dildo.Id</td>
-        <td>@dildo.Name</td>
-        <td>@dildo.Price</td>
-        <td>@dildo.Size</td>
-        <td>@dildo.ExpireDate.ToString("MM/dd/yyyy")</td>
-        <td>@dildo.Material</td>
-        <td>@dildo.Color</td>
-        <td>@dildo.Stock</td>
-        <td>
+      @foreach (var dildo in dildos)
+      {
+        <tr>
+          <td>@dildo.idDildo</td>
+          <td>@dildo.Name</td>
+          <td>@dildo.Price</td>
+          <td>@dildo.Size</td>
+          <td>@dildo.ExpireDate.ToString("MM/dd/yyyy")</td>
+          <td>@dildo.Material</td>
+          <td>@dildo.Color</td>
+          <td>@dildo.Stock</td>
+          <td>
             @if (puesto == 1)
             {
-                <button class="btn btn-primary" @onclick="(() => EditDildo(dildo.Id))">
-                    <i class="oi oi-pencil"></i>
+              <div class="d-flex justify-content-evenly">
+                <button class="btn btn-secondary mx-2" @onclick="(() => EditDildo(dildo.idDildo))">
+                  <i class="oi oi-pencil"></i>
                 </button>
-                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal"
-                    @onclick="(() => currentDildo = dildo)">
-                    <i class="oi oi-x"></i>
+                <button class="btn btn-danger mx-2" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                  @onclick="(() => currentDildo = dildo)">
+                  <i class="oi oi-x"></i>
                 </button>
+              </div>
             }
             else if (puesto == 2)
             {
-                <button class="btn btn-success" @onclick="(() => BuyDildo(dildo.Id))">
-                    Buy
-                </button>
+              <button class="btn btn-success" @onclick="(() => BuyDildo(dildo.idDildo,  idU))">
+                Buy
+              </button>
             }
-        </td>
-    </tr>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <div class="d-flex justify-content-between">
+    <div>
+      <button type="button" class="btn btn-danger" @onclick="LogOut">Sign Out</button>
+    </div>
+  </div>
 }
-        </tbody>
-    </table>
-}
+
+
 
 @code
 {
-    [Parameter]
-    public int puesto { get; set; }
-    [Parameter]
-    public int id { get; set; }
-    private Dildo[]? dildos;
-    private Dildo? currentDildo;
-    protected override async Task OnInitializedAsync()
+  [Parameter]
+  public int idU { get; set; }
+  [Parameter]
+  public int puesto { get; set; }
+  private Dildo[]? dildos;
+  private Dildo? dildoValidation;
+  private Dildo? currentDildo;
+  private string mensaje;
+
+  protected override async Task OnInitializedAsync()
+  {
+    dildos = await client.GetDildosAsync();
+  }
+
+  private void CreateDildo()
+  {
+    NavigationManager.NavigateTo($"dildo/{puesto}/{idU}");
+  }
+
+  private void EditDildo(int id)
+  {
+    NavigationManager.NavigateTo($"/dildo/{puesto}/{idU}/{id}");
+  }
+
+  private void LogOut()
+  {
+    NavigationManager.NavigateTo($"/");
+  }
+
+  private void perfil()
+  {
+    NavigationManager.NavigateTo($"/perfil/{puesto}/{idU}");
+  }
+
+  private void NavigateToSearch()
+  {
+    NavigationManager.NavigateTo($"/search/{puesto}/{idU}");
+  }
+  private async Task BuyDildo(int idDildo, int idUser)
+  {
+    dildoValidation = await client.GetDildoAsync(idDildo);
+    if (dildoValidation.Stock == 0)
     {
-        dildos = await client.GetDildosAsync();
+      mensaje = "There is no more stock available";
+    }
+    else
+    {
+      Comprado dildo = new Comprado();
+      dildo.DildoId = idDildo;
+      dildo.UserId = idUser;
+      dildo.comprado = DateTime.Now;
+
+
+      await compradosClient.AddDildoCompradoAsync(dildo);
+      dildos = await client.GetDildosAsync();
+      mensaje = "Dildo buyed successfully";
     }
 
-    private void CreateDildo()
-    {
-        NavigationManager.NavigateTo("dildo");
-    }
 
-    private void EditDildo(int id)
-    {
-        NavigationManager.NavigateTo($"/dildo/{id}");
-    }
-    private void BuyDildo(int id)
-    {
-      // Cuando se compra un dildo, se resta uno al stock
-    }
+  }
 
-    private async Task OnDeleteModalCloseAsync(bool accepted)
+  private async Task OnDeleteModalCloseAsync(bool accepted)
+  {
+    if (accepted)
     {
-        if (accepted)
-        {
-            await client.DeleteDildoAsync(currentDildo!.Id);
-            dildos = await client.GetDildosAsync();
-        }
+      await client.DeleteDildoAsync(currentDildo!.idDildo);
+      dildos = await client.GetDildosAsync();
     }
+  }
 }
